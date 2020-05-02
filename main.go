@@ -16,7 +16,8 @@ func main() {
 
 	switch prod {
 	case true:
-
+		fmt.Printf("[PROD] no prod mode, exiting...\n")
+		return
 	case false:
 		srv := &http.Server{
 			Addr:         ":8080",

@@ -85,6 +85,7 @@ func uploadData(w http.ResponseWriter, r *http.Request) {
 	// Get the file from form
 	file, fileHeader, err := r.FormFile("filename")
 	if err != nil {
+		logrus.Errorf("can not parse file from form : %v\n", err)
 		return
 	}
 	defer file.Close()
@@ -93,12 +94,14 @@ func uploadData(w http.ResponseWriter, r *http.Request) {
 
 	// Check if the file's size is accepted
 	if fileSize > maxUploadSize {
+		logrus.Errorf("file is too big %d instead of %d : %v\n", fileSize, maxUploadSize, err)
 		return
 	}
 
 	// implement io.Reader
 	fileBytes, err := ioutil.ReadAll(file)
 	if err != nil {
+		logrus.Errorf("error reading file bytes : %v\n", err)
 		return
 	}
 
@@ -110,12 +113,14 @@ func uploadData(w http.ResponseWriter, r *http.Request) {
 
 	fileEndings, err := mime.ExtensionsByType(detectedFileType)
 	if err != nil {
+		logrus.Errorf("did not find mime extension : %v\n", err)
 		return
 	}
 
 	path := "./uploads/" + fileName[0:2] + "/" + fileName[2:4] + "/"
 	err = os.MkdirAll(path, 0700)
 	if err != nil && !os.IsExist(err) {
+		logrus.Errorf("error creating directory : %v\n", err)
 		return
 	}
 
@@ -125,6 +130,7 @@ func uploadData(w http.ResponseWriter, r *http.Request) {
 	// write file
 	newFile, err := os.Create(newPath)
 	if err != nil {
+		logrus.Errorf("can not write in new file on disk : %v\n", err)
 		return
 	}
 	defer newFile.Close()
@@ -156,6 +162,7 @@ func downloadData(w http.ResponseWriter, r *http.Request) {
 
 	if len(id) < 12 {
 		log.Printf("Error in id length : %d instead of 12\n", len(id))
+		http.Error(w, "File not found.", 404)
 		return
 	}
 
