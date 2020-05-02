@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <title>YASP</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+   </head>
+   <body>
+      {{ template "navbar.html" }}
+      <div class="jumbotron text-center">
+         <h1>YASP</h1>
+         <p> <i>Yet Another Sharing Plateform</i> </p>
+      </div>
+      <div class="container">
+         <div class="row">
+            <div class="container mt-3">
+               <h2>Download a file</h2>
+               <p>To download a file, use the search bar below and enter the file's ID. If the ID exists, the download will be automatically launched.</p>
+               <form action="/download" class="needs-validation" method="POST" novalidate>
+                <div class="form-group">
+                  <!-- <label for="uname">File's ID:</label> -->
+                  <input type="text" class="form-control" id="fileID" placeholder="Enter file's ID" name="fileID" required>
+                  <div class="valid-feedback">Valid.</div>
+                  <div class="invalid-feedback">Please fill out this field.</div>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+              </form>
+              
+             
+            </div>
+         </div>
+      </div>
+      <script>
+        // Disable form submissions if there are invalid fields
+        (function() {
+          'use strict';
+          window.addEventListener('load', function() {
+            // Get the forms we want to add validation styles to
+            var forms = document.getElementsByClassName('needs-validation');
+            // Loop over them and prevent submission
+            var validation = Array.prototype.filter.call(forms, function(form) {
+              form.addEventListener('submit', function(event) {
+                if (form.checkValidity() === false) {
+                  event.preventDefault();
+                  event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+              }, false);
+            });
+          }, false);
+        })();
+        </script>
+   </body>
+{{ template "footer.html" }}
+</html>
