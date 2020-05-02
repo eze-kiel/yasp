@@ -22,12 +22,13 @@
                <p>To download a file, use the search bar below and enter the file's ID. If the ID exists, the download will be automatically launched.</p>
                <form action="/download" class="needs-validation" method="POST" novalidate>
                 <div class="form-group">
-                  <!-- <label for="uname">File's ID:</label> -->
                   <input type="text" class="form-control" id="fileID" placeholder="Enter file's ID" name="fileID" required>
                   <div class="valid-feedback">Valid.</div>
                   <div class="invalid-feedback">Please fill out this field.</div>
                 </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <div class="mt-3">
+                  <button type="submit" class="btn btn-primary">Submit</button>
+               </div>
               </form>
               
              
