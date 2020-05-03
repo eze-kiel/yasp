@@ -113,7 +113,7 @@ func DownloadPage(w http.ResponseWriter, r *http.Request) {
 // and write it in the correct folder.
 // UploadData also execute upload.html, with additionnal data containing
 // the file ID.
-func UploadData(w http.ResponseWriter, r *http.Request) {
+func uploadData(w http.ResponseWriter, r *http.Request) {
 	// Try to parse data from post form
 	if err := r.ParseMultipartForm(maxUploadSize); err != nil {
 		fmt.Printf("Could not parse multipart form: %v\n", err)
