@@ -34,7 +34,7 @@ func HandleFunc() *mux.Router {
 	r.HandleFunc("/", HomePage)
 
 	r.HandleFunc("/upload", UploadPage).Methods("GET")
-	r.HandleFunc("/upload", UploadData).Methods("POST")
+	r.HandleFunc("/upload", uploadData).Methods("POST")
 
 	r.HandleFunc("/download", DownloadPage).Methods("GET")
 	r.HandleFunc("/download", downloadData).Methods("POST")
