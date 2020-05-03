@@ -20,6 +20,8 @@ import (
 
 const maxUploadSize = 5 * 1024 * 1024 // 5 Mo
 
+const templatesDir = "/home/ezekiel/Dev/go/yasp/views/"
+
 // Transaction contains informations about the upload
 type Transaction struct {
 	Success bool
@@ -29,12 +31,12 @@ type Transaction struct {
 // HandleFunc handle funcs
 func HandleFunc() *mux.Router {
 	r := mux.NewRouter()
-	r.HandleFunc("/", homePage)
+	r.HandleFunc("/", HomePage)
 
-	r.HandleFunc("/upload", uploadPage).Methods("GET")
-	r.HandleFunc("/upload", uploadData).Methods("POST")
+	r.HandleFunc("/upload", UploadPage).Methods("GET")
+	r.HandleFunc("/upload", UploadData).Methods("POST")
 
-	r.HandleFunc("/download", downloadPage).Methods("GET")
+	r.HandleFunc("/download", DownloadPage).Methods("GET")
 	r.HandleFunc("/download", downloadData).Methods("POST")
 
 	r.NotFoundHandler = http.HandlerFunc(notFoundPage)
@@ -43,7 +45,10 @@ func HandleFunc() *mux.Router {
 }
 
 func notFoundPage(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("views/404.html", "views/templates/footer.html", "views/templates/navbar.html")
+	tmpl, err := template.ParseFiles(templatesDir+"404.html",
+		templatesDir+"templates/navbar.html",
+		templatesDir+"templates/footer.html")
+
 	if err != nil {
 		log.Fatalf("Can not parse home page : %v", err)
 	}
@@ -54,8 +59,12 @@ func notFoundPage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func homePage(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("views/home.html", "views/templates/navbar.html", "views/templates/footer.html")
+// HomePage handles the home page
+func HomePage(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles(templatesDir+"home.html",
+		templatesDir+"templates/navbar.html",
+		templatesDir+"templates/footer.html")
+
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -67,8 +76,12 @@ func homePage(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func uploadPage(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("views/upload.html", "views/templates/navbar.html", "views/templates/footer.html")
+// UploadPage handles the upload page when the method is GET
+func UploadPage(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles(templatesDir+"upload.html",
+		templatesDir+"templates/navbar.html",
+		templatesDir+"templates/footer.html")
+
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -79,8 +92,12 @@ func uploadPage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func downloadPage(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("views/download.html", "views/templates/navbar.html", "views/templates/footer.html")
+// DownloadPage handles the donwload page when the method is GET
+func DownloadPage(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles(templatesDir+"download.html",
+		templatesDir+"templates/navbar.html",
+		templatesDir+"templates/footer.html")
+
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -91,7 +108,12 @@ func downloadPage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func uploadData(w http.ResponseWriter, r *http.Request) {
+// UploadData handles the upload page when the method is POST
+// It parses data from the form, et process it to create an appropriate filename,
+// and write it in the correct folder.
+// UploadData also execute upload.html, with additionnal data containing
+// the file ID.
+func UploadData(w http.ResponseWriter, r *http.Request) {
 	// Try to parse data from post form
 	if err := r.ParseMultipartForm(maxUploadSize); err != nil {
 		fmt.Printf("Could not parse multipart form: %v\n", err)
@@ -161,7 +183,10 @@ func uploadData(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Parse templates to display file's id
-	tmpl, err := template.ParseFiles("views/upload.html", "views/templates/navbar.html", "views/templates/footer.html")
+	tmpl, err := template.ParseFiles(templatesDir+"upload.html",
+		templatesDir+"templates/navbar.html",
+		templatesDir+"templates/footer.html")
+
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -173,6 +198,11 @@ func uploadData(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// DownloadData handles the download page when the method is POST.
+// When an ID is provided in the form, it walks the filesystem looking
+// for a file with the corresponding name.
+// If the file exists, it automatically fills the response headers to start
+// the download.
 func downloadData(w http.ResponseWriter, r *http.Request) {
 	id := r.FormValue("fileID")
 
