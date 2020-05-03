@@ -30,12 +30,28 @@ type Transaction struct {
 func HandleFunc() *mux.Router {
 	r := mux.NewRouter()
 	r.HandleFunc("/", homePage)
+
 	r.HandleFunc("/upload", uploadPage).Methods("GET")
 	r.HandleFunc("/upload", uploadData).Methods("POST")
+
 	r.HandleFunc("/download", downloadPage).Methods("GET")
 	r.HandleFunc("/download", downloadData).Methods("POST")
 
+	r.NotFoundHandler = http.HandlerFunc(notFoundPage)
+
 	return r
+}
+
+func notFoundPage(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles("views/404.html", "views/templates/footer.html", "views/templates/navbar.html")
+	if err != nil {
+		log.Fatalf("Can not parse home page : %v", err)
+	}
+
+	err = tmpl.Execute(w, nil)
+	if err != nil {
+		log.Fatalf("Can not execute templates for home page : %v", err)
+	}
 }
 
 func homePage(w http.ResponseWriter, r *http.Request) {
