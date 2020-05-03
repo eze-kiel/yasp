@@ -24,8 +24,10 @@ const templatesDir = "/home/ezekiel/Dev/go/yasp/views/"
 
 // Transaction contains informations about the upload
 type Transaction struct {
-	Success bool
-	ID      string
+	Success      bool
+	Error        bool
+	ErrorMessage string
+	ID           string
 }
 
 // HandleFunc handle funcs
@@ -124,6 +126,24 @@ func uploadData(w http.ResponseWriter, r *http.Request) {
 	file, fileHeader, err := r.FormFile("filename")
 	if err != nil {
 		logrus.Errorf("can not parse file from form : %v\n", err)
+		uploadState := Transaction{
+			Error:        true,
+			ErrorMessage: "No file provided.",
+		}
+
+		// Parse templates to display file's id
+		tmpl, err := template.ParseFiles(templatesDir+"upload.html",
+			templatesDir+"templates/navbar.html",
+			templatesDir+"templates/footer.html")
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = tmpl.Execute(w, uploadState)
+		if err != nil {
+			log.Fatalf("Can not execute templates for donwload page : %v", err)
+		}
 		return
 	}
 	defer file.Close()
@@ -132,7 +152,25 @@ func uploadData(w http.ResponseWriter, r *http.Request) {
 
 	// Check if the file's size is accepted
 	if fileSize > maxUploadSize {
-		logrus.Errorf("file is too big %d instead of %d : %v\n", fileSize, maxUploadSize, err)
+		logrus.Errorf("File is too big %d instead of %d : %v\n", fileSize, maxUploadSize, err)
+		uploadState := Transaction{
+			Error:        true,
+			ErrorMessage: "File is too big (> 5Mo).",
+		}
+
+		// Parse templates to display file's id
+		tmpl, err := template.ParseFiles(templatesDir+"upload.html",
+			templatesDir+"templates/navbar.html",
+			templatesDir+"templates/footer.html")
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = tmpl.Execute(w, uploadState)
+		if err != nil {
+			log.Fatalf("Can not execute templates for donwload page : %v", err)
+		}
 		return
 	}
 
